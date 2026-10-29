@@ -1,0 +1,12 @@
+{
+  "name": "viral-india-24",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Viral India 24 news website with RSS headlines and protected admin posting",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
