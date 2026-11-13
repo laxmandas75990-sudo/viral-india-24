@@ -1,51 +1,3 @@
-
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const crypto = require('crypto');
-const { URL } = require('url');
-const Busboy = require('busboy');
-const cloudinary = require('cloudinary').v2;
-
-const PORT = Number(process.env.PORT || 3000);
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
-const POSTS_FILE = path.join(DATA_DIR, 'posts.json');
-
-if (!ADMIN_PASSWORD || ADMIN_PASSWORD.length < 12) {
-  console.error('Set ADMIN_PASSWORD to at least 12 characters.');
-  process.exit(1);
-}
-
-fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(POSTS_FILE)) fs.writeFileSync(POSTS_FILE, '[]');
-
-if (process.env.CLOUDINARY_URL) {
-  cloudinary.config({ url: process.env.CLOUDINARY_URL });
-}
-
-const tokens = new Map();
-
-const FEEDS = [
-  { name: 'Google News India', url: 'https://news.google.com/rss?hl=hi&gl=IN&ceid=IN:hi', category: 'India' },
-  { name: 'Google News Politics', url: 'https://news.google.com/rss/search?q=India+politics&hl=en-IN&gl=IN&ceid=IN:en', category: 'Politics' },
-  { name: 'Google News Viral', url: 'https://news.google.com/rss/search?q=India+viral+trending&hl=en-IN&gl=IN&ceid=IN:en', category: 'Viral' },
-  { name: 'Google News Entertainment', url: 'https://news.google.com/rss/search?q=India+entertainment&hl=en-IN&gl=IN&ceid=IN:en', category: 'Entertainment' },
-  { name: 'Google News Sports', url: 'https://news.google.com/rss/search?q=India+sports&hl=en-IN&gl=IN&ceid=IN:en', category: 'Sports' }
-];
-
-function readPosts() {
-  try {
-    return JSON.parse(fs.readFileSync(POSTS_FILE, 'utf8'));
-  } catch {
-    return [];
-  }
-}
-
-function writePosts(posts) {
-  fs.writeFileSync(POSTS_FILE, JSON.stringify(posts, null, 2));
-}
-
 function send(res, status, obj, headers = {}) {
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -55,329 +7,116 @@ function send(res, status, obj, headers = {}) {
   res.end(JSON.stringify(obj));
 }
 
-function body(req) {
-  return new Promise((resolve, reject) => {
-    let s = '';
-    req.on('data', c => {
-      s += c;
-      if (s.length > 1e6) reject(new Error('Request too large'));
-    });
-    req.on('end', () => {
-      try {
-        resolve(JSON.parse(s || '{}'));
-      } catch {
-        reject(new Error('Invalid JSON'));
-      }
-    });
-    req.on('error', reject);
-  });
+function escapeHtml(value = '') {
+  return String(value).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;',
+    '"': '&quot;', "'": '&#39;'
+  }[c]));
 }
 
-function decodeXml(s = '') {
-  return s
-    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1')
-    .replace(/<[^>]*>/g, '')
-    .replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&apos;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
-    .trim();
+function siteBase(req) {
+  const host = req.headers.host || 'viral-india-24.onrender.com';
+  const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+  return `${proto}://${host}`;
 }
 
-function tag(xml, name) {
-  const m = xml.match(
-    new RegExp('<' + name + '(?:\\s[^>]*)?>([\\s\\S]*?)<\\/' + name + '>', 'i')
-  );
-  return m ? m[1] : '';
+function articleHtml(req, post) {
+  const canonical = `${siteBase(req)}/news/${encodeURIComponent(post.id)}`;
+  const title = `${post.title} | VIRAL INDIA 24`;
+  const description = String(post.summary || post.title).slice(0, 300);
+  const published = post.time || new Date().toISOString();
+  const image = post.imageUrl || '';
+
+  const jsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: post.title,
+    description,
+    datePublished: published,
+    dateModified: published,
+    author: { '@type': 'Organization', name: 'VIRAL INDIA 24' },
+    publisher: { '@type': 'Organization', name: 'VIRAL INDIA 24' },
+    mainEntityOfPage: canonical,
+    ...(image ? { image: [image] } : {})
+  }).replace(/</g, '\\u003c');
+
+  return `<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHtml(title)}</title>
+<meta name="description" content="${escapeHtml(description)}">
+<link rel="canonical" href="${escapeHtml(canonical)}">
+<meta property="og:type" content="article">
+<meta property="og:title" content="${escapeHtml(title)}">
+<meta property="og:description" content="${escapeHtml(description)}">
+<meta property="og:url" content="${escapeHtml(canonical)}">
+${image ? `<meta property="og:image" content="${escapeHtml(image)}">` : ''}
+<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">
+<script type="application/ld+json">${jsonLd}</script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0b0b0d;color:#f7f7f8;font:16px/1.7 Arial,sans-serif}
+main{max-width:850px;margin:35px auto;padding:0 18px}
+.brand{color:#ff6972;font-weight:bold}
+a{color:#ff6972}
+.photo{width:100%;max-height:520px;object-fit:contain;background:#151518;border-radius:8px}
+h1{line-height:1.25;font-size:clamp(27px,5vw,42px)}
+.meta{color:#aaaab3;font-size:13px}
+.story{white-space:pre-wrap;overflow-wrap:anywhere;background:#151518;padding:20px;border-radius:8px}
+footer{margin-top:35px;color:#aaaab3;border-top:1px solid #333;padding-top:18px}
+</style>
+</head>
+<body>
+<main>
+<a class="brand" href="/">← VIRAL INDIA 24</a>
+<p class="meta">${escapeHtml(post.category || 'News')} · ${escapeHtml(new Date(published).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' }))} · VIRAL INDIA 24</p>
+<h1>${escapeHtml(post.title)}</h1>
+${image ? `<img class="photo" src="${escapeHtml(image)}" alt="${escapeHtml(post.title)}">` : ''}
+<div class="story">${escapeHtml(post.summary || '')}</div>
+<footer>© ${new Date().getFullYear()} VIRAL INDIA 24 · <a href="/">Home</a></footer>
+</main>
+</body>
+</html>`;
 }
-
-async function getFeed(feed) {
-  try {
-    const r = await fetch(feed.url, {
-      headers: { 'User-Agent': 'ViralIndia24/1.0 news reader' },
-      signal: AbortSignal.timeout(8000)
-    });
-    if (!r.ok) throw Error('HTTP ' + r.status);
-
-    const xml = await r.text();
-
-    return [...xml.matchAll(/<item(?:\s[^>]*)?>([\s\S]*?)<\/item>/gi)]
-      .slice(0, 12)
-      .map(m => {
-        const x = m[1];
-        let link = decodeXml(tag(x, 'link'));
-
-        if (!link) {
-          const lm = x.match(/<link[^>]*href=["']([^"']+)/i);
-          if (lm) link = decodeXml(lm[1]);
-        }
-
-        return {
-          id: crypto.createHash('sha1').update(link || tag(x, 'title')).digest('hex'),
-          title: decodeXml(tag(x, 'title')),
-          summary: decodeXml(tag(x, 'description')).slice(0, 400),
-          url: link,
-          source: feed.name,
-          category: feed.category,
-          time: decodeXml(tag(x, 'pubDate'))
-        };
-      })
-      .filter(x => x.title && x.url);
-  } catch (e) {
-    console.error('Feed failed:', feed.name, e.message);
-    return [];
-  }
-}
-
-function uploadImage(req) {
-  return new Promise((resolve, reject) => {
-    let fileFound = false;
-    let settled = false;
-    let uploadPromise = null;
-
-    const fail = err => {
-      if (!settled) {
-        settled = true;
-        reject(err);
-      }
-    };
-
-    let bb;
-
-    try {
-      bb = Busboy({
-        headers: req.headers,
-        limits: { files: 1, fileSize: 5 * 1024 * 1024 }
-      });
-    } catch (e) {
-      return fail(e);
-    }
-
-    bb.on('file', (field, file, info) => {
-      if (field !== 'image') {
-        file.resume();
-        return;
-      }
-
-      fileFound = true;
-
-      if (!['image/jpeg', 'image/png', 'image/webp'].includes(info.mimeType)) {
-        file.resume();
-        return fail(new Error('Only JPG, PNG and WebP images are allowed.'));
-      }
-
-      uploadPromise = new Promise((res, rej) => {
-        const stream = cloudinary.uploader.upload_stream({
-          folder: 'viral-india-24',
-          resource_type: 'image'
-        }, (err, result) => {
-          if (err) return rej(err);
-          res({
-            imageUrl: result.secure_url,
-            publicId: result.public_id
-          });
-        });
-
-        file.on('limit', () => {
-          stream.destroy(new Error('Image must be smaller than 5 MB.'));
-        });
-
-        file.pipe(stream);
-      });
-    });
-
-    bb.on('error', fail);
-
-    bb.on('close', async () => {
-      if (settled) return;
-      if (!fileFound || !uploadPromise) {
-        return fail(new Error('Please select an image.'));
-      }
-
-      try {
-        const result = await uploadPromise;
-        if (!settled) {
-          settled = true;
-          resolve(result);
-        }
-      } catch (e) {
-        fail(e);
-      }
-    });
-
-    req.pipe(bb);
-  });
-}
-
-async function handler(req, res) {
-  const url = new URL(req.url, 'http://localhost');
-
-  if (req.method === 'GET' && url.pathname === '/api/health') {
-    return send(res, 200, { ok: true });
-  }
-
-  if (req.method === 'GET' && url.pathname === '/api/news') {
-    const results = await Promise.all(FEEDS.map(getFeed));
-    const seen = new Set();
-
-    const items = results.flat().filter(n => {
-      if (seen.has(n.url)) return false;
-      seen.add(n.url);
-      return true;
-    }).sort((a, b) => new Date(b.time || 0) - new Date(a.time || 0));
-
-    return send(res, 200, {
-      items,
-      updatedAt: new Date().toISOString(),
-      note: 'Headlines are sourced from RSS. Verify original reports.'
-    }, { 'Cache-Control': 'public, max-age=180' });
-  }
-
-  if (req.method === 'GET' && url.pathname === '/api/posts') {
-    return send(res, 200, { items: readPosts() });
-  }
-
-  if (req.method === 'POST' && url.pathname === '/api/admin/login') {
-    try {
-      const b = await body(req);
-      const supplied = Buffer.from(String(b.password || ''));
-      const expected = Buffer.from(ADMIN_PASSWORD);
-
-      if (supplied.length !== expected.length ||
-          !crypto.timingSafeEqual(supplied, expected)) {
-        return send(res, 401, { error: 'Incorrect password' });
-      }
-
-      const t = crypto.randomBytes(32).toString('hex');
-      tokens.set(t, Date.now() + 8 * 60 * 60 * 1000);
-      return send(res, 200, { token: t });
-    } catch (e) {
-      return send(res, 400, { error: e.message });
-    }
-  }
-
-  const auth = req => {
-    const m = (req.headers.authorization || '').match(/^Bearer (.+)$/);
-    if (!m) return false;
-
-    const expiry = tokens.get(m[1]);
-    if (!expiry || expiry < Date.now()) {
-      tokens.delete(m[1]);
-      return false;
-    }
-    return true;
-  };
-
-  if (req.method === 'POST' && url.pathname === '/api/upload') {
-    if (!auth(req)) return send(res, 401, { error: 'Please log in again.' });
-
-    if (!process.env.CLOUDINARY_URL) {
-      return send(res, 503, { error: 'Cloudinary is not configured.' });
-    }
-
-    try {
-      const result = await uploadImage(req);
-      return send(res, 201, result);
-    } catch (e) {
-      console.error('Image upload failed:', e.message);
-      return send(res, 400, { error: e.message || 'Image upload failed.' });
-    }
-  }
-
-  if (req.method === 'POST' && url.pathname === '/api/posts') {
-    if (!auth(req)) return send(res, 401, { error: 'Please log in again.' });
-
-    try {
-      const b = await body(req);
-      const title = String(b.title || '').trim();
-      const summary = String(b.summary || '').trim();
-
-      if (!title || !summary) {
-        return send(res, 400, { error: 'Headline and summary are required.' });
-      }
-
-      const allowed = ['Viral', 'Politics', 'India', 'Entertainment', 'Sports', 'Fact Check', 'World'];
-      const posts = readPosts();
-
-      let imageUrl = '';
-      if (b.imageUrl) {
-        try {
-          const parsed = new URL(b.imageUrl);
-          if (parsed.protocol !== 'https:' || parsed.hostname !== 'res.cloudinary.com') {
-            return send(res, 400, { error: 'Invalid image URL.' });
-          }
-          imageUrl = parsed.href;
-        } catch {
-          return send(res, 400, { error: 'Invalid image URL.' });
-        }
-      }
-
-      const p = {
-        id: crypto.randomUUID(),
-        title: title.slice(0, 180),
-        summary: summary.slice(0, 1200),
-        category: allowed.includes(b.category) ? b.category : 'Viral',
-        source: String(b.source || '').slice(0, 300),
-        emoji: String(b.emoji || '📰').slice(0, 8),
-        imageUrl,
-        time: new Date().toISOString()
-      };
-
-      posts.unshift(p);
-      writePosts(posts);
-      return send(res, 201, { item: p });
-    } catch (e) {
-      return send(res, 400, { error: e.message });
-    }
-  }
-
-  if (req.method === 'DELETE' && url.pathname.startsWith('/api/posts/')) {
-    if (!auth(req)) return send(res, 401, { error: 'Please log in again.' });
-
-    const id = decodeURIComponent(url.pathname.slice('/api/posts/'.length));
-    const posts = readPosts();
-    writePosts(posts.filter(p => p.id !== id));
-    return send(res, 200, { ok: true });
-  }
-
-  if (req.method === 'GET') {
+if (req.method === 'GET') {
     const requested = url.pathname === '/' ? '/index.html' : url.pathname;
-    const file = path.join(__dirname, path.normalize(requested).replace(/^(\.\.[/\\])+/, ''));
+if (req.method === 'GET' && url.pathname === '/sitemap.xml') {
+  const base = siteBase(req);
+  const urls = [
+    `<url><loc>${escapeHtml(base)}/</loc></url>`,
+    ...readPosts().map(p =>
+      `<url><loc>${escapeHtml(base)}/news/${encodeURIComponent(p.id)}</loc><lastmod>${escapeHtml((p.time || '').slice(0, 10) || new Date().toISOString().slice(0, 10))}</lastmod></url>`
+    )
+  ];
 
-    if (!file.startsWith(__dirname)) {
-      return send(res, 403, { error: 'Forbidden' });
-    }
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.join('')}
+  </urlset>`;
 
-    fs.readFile(file, (err, data) => {
-      if (err) {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        return res.end('Not found');
-      }
-
-      const ext = path.extname(file);
-      const type = ext === '.html' ? 'text/html; charset=utf-8'
-        : ext === '.css' ? 'text/css'
-        : ext === '.js' ? 'text/javascript'
-        : 'application/octet-stream';
-
-      res.writeHead(200, {
-        'Content-Type': type,
-        'X-Content-Type-Options': 'nosniff',
-        'Referrer-Policy': 'strict-origin-when-cross-origin'
-      });
-      res.end(data);
-    });
-    return;
-  }
-
-  send(res, 404, { error: 'Not found' });
+  res.writeHead(200, {
+    'Content-Type': 'application/xml; charset=utf-8',
+    'Cache-Control': 'public, max-age=300'
+  });
+  return res.end(xml);
 }
 
-http.createServer((req, res) => {
-  handler(req, res).catch(e => {
-    console.error(e);
-    send(res, 500, { error: 'Server error' });
+const articleMatch = url.pathname.match(/^\/news\/([a-f0-9-]{36})$/i);
+
+if (req.method === 'GET' && articleMatch) {
+  const post = readPosts().find(p => p.id === articleMatch[1]);
+
+  if (!post) {
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    return res.end('News article not found');
+  }
+
+  res.writeHead(200, {
+    'Content-Type': 'text/html; charset=utf-8',
+    'X-Content-Type-Options': 'nosniff'
   });
-}).listen(PORT, () => console.log(`Viral India 24 running on port ${PORT}`));
+
+  return res.end(articleHtml(req, post));
+}
