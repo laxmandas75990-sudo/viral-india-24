@@ -1,0 +1,5 @@
+
+User-agent: *
+Allow: /
+
+Sitemap: https://viral-india-24.onrender.com/sitemap.xml
