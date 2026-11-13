@@ -1,14 +1,14 @@
 
-
 <!doctype html>
 <html lang="hi">
 <head>
 <meta charset="utf-8">
-  <meta name="google-site-verification" content="VprRoLtwjjE7x-5HVycxSSpto0KPn2whdBiZ9BKj4EE" />
+<meta name="google-site-verification" content="VprRoLtwjjE7x-5HVycxSSpto0KPn2whdBiZ9BKj4EE" />
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#111">
-<title>VIRAL INDIA 24 – Latest Hindi News, India News & Trending Updates</title>VIRAL INDIA 24 | Trending Now</title>
-  <meta name="description" content="VIRAL INDIA 24 par padhein latest Hindi news, India news, breaking news, viral stories aur trending updates.">
+<title>VIRAL INDIA 24 – Latest Hindi News, India News & Trending Updates</title>
+<meta name="description" content="VIRAL INDIA 24 par padhein latest Hindi news, India news, breaking news, viral stories aur trending updates.">
+
 <style>
 :root{--r:#f02b36;--bg:#0b0b0d;--p:#151518;--mut:#aaaab3;--line:#2b2b32}
 *{box-sizing:border-box}
@@ -32,7 +32,7 @@ nav a:first-child{color:#ff6972}
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}
 .card{border:1px solid var(--line);border-radius:8px;background:var(--p);overflow:hidden}
 .thumb{height:240px;display:grid;place-items:center;background:linear-gradient(130deg,#42151c,#19191d);font-size:48px;position:relative;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit: contain;}
+.thumb img{width:100%;height:100%;object-fit:contain}
 .thumb:after{content:"VIRAL INDIA 24";position:absolute;bottom:8px;left:10px;font-size:10px;letter-spacing:1px;color:#fff;text-shadow:0 1px 4px #000}
 .body{padding:13px}
 .cat{color:#ff6972;font-size:10px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em}
@@ -59,34 +59,68 @@ footer{margin-top:35px;border-top:1px solid var(--line);padding:22px 0;color:var
 @media(max-width:450px){.grid{grid-template-columns:1fr}.thumb{height:180px}.section h2{font-size:20px}}
 </style>
 </head>
-<body>
 
-<div class="strip"><div class="wrap"><span>INDIA • PEOPLE • TRENDS</span><span id="date"></span></div></div>
+<body>
+<div class="strip">
+<div class="wrap">
+<span>INDIA • PEOPLE • TRENDS</span>
+<span id="date"></span>
+</div>
+</div>
 
 <header class="wrap">
 <div class="head">
-<div><div class="logo"><b>V</b> VIRAL INDIA <span style="font-size:17px">24</span></div><div class="sub">Trending stories. Clear facts. Your India.</div></div>
+<div>
+<div class="logo"><b>V</b> VIRAL INDIA <span style="font-size:17px">24</span></div>
+<div class="sub">Trending stories. Clear facts. Your India.</div>
+</div>
 <span class="live">● TRENDING NOW</span>
 </div>
+
 <nav>
-<a href="#trending">TRENDING</a><a href="#latest">LATEST</a><a href="#politics">POLITICS</a><a href="#viral">VIRAL</a><a href="#entertainment">ENTERTAINMENT</a><a href="#sports">SPORTS</a><a href="#factcheck">FACT CHECK</a><a href="#admin">ADMIN</a>
+<a href="#trending">TRENDING</a>
+<a href="#latest">LATEST</a>
+<a href="#politics">POLITICS</a>
+<a href="#viral">VIRAL</a>
+<a href="#entertainment">ENTERTAINMENT</a>
+<a href="#sports">SPORTS</a>
+<a href="#factcheck">FACT CHECK</a>
+<a href="#admin">ADMIN</a>
 </nav>
 </header>
 
 <main class="wrap">
-<div class="breaking"><b>TOP UPDATE</b><span id="ticker">Latest headlines from available RSS sources appear here.</span></div>
+<div class="breaking">
+<b>TOP UPDATE</b>
+<span id="ticker">Latest headlines from available RSS sources appear here.</span>
+</div>
 
-<div class="section" id="trending"><h2>Trending Now</h2><span class="live">LIVE FEED</span></div>
+<div class="section" id="trending">
+<h2>Trending Now</h2>
+<span class="live">LIVE FEED</span>
+</div>
 <div class="grid" id="trendingGrid"></div>
 
-<div class="section" id="latest"><h2>Latest Stories</h2><span class="muted" id="count"></span></div>
+<div class="section" id="latest">
+<h2>Latest Stories</h2>
+<span class="muted" id="count"></span>
+</div>
+
 <div class="toolbar">
 <input id="search" placeholder="खबर खोजें / Search news">
 <select id="category">
-<option>All</option><option>India</option><option>Politics</option><option>Viral</option><option>Entertainment</option><option>Sports</option><option>Fact Check</option><option>World</option>
+<option>All</option>
+<option>India</option>
+<option>Politics</option>
+<option>Viral</option>
+<option>Entertainment</option>
+<option>Sports</option>
+<option>Fact Check</option>
+<option>World</option>
 </select>
 <button class="btn" id="refresh">↻ Refresh news</button>
 </div>
+
 <div class="grid" id="latestGrid"></div>
 
 <section class="formbox" id="admin">
@@ -96,7 +130,9 @@ footer{margin-top:35px;border-top:1px solid var(--line);padding:22px 0;color:var
 <div id="login">
 <form class="form" id="loginForm">
 <input class="wide" id="password" type="password" required placeholder="Admin password">
-<div class="wide"><button class="btn primary">Login</button></div>
+<div class="wide">
+<button class="btn primary">Login</button>
+</div>
 </form>
 </div>
 
@@ -107,7 +143,13 @@ footer{margin-top:35px;border-top:1px solid var(--line);padding:22px 0;color:var
 <input id="title" required maxlength="180" placeholder="Headline">
 
 <select id="cat">
-<option>Viral</option><option>Politics</option><option>India</option><option>Entertainment</option><option>Sports</option><option>Fact Check</option><option>World</option>
+<option>Viral</option>
+<option>Politics</option>
+<option>India</option>
+<option>Entertainment</option>
+<option>Sports</option>
+<option>Fact Check</option>
+<option>World</option>
 </select>
 
 <input id="source" placeholder="Source name or source URL">
@@ -135,10 +177,19 @@ footer{margin-top:35px;border-top:1px solid var(--line);padding:22px 0;color:var
 <div id="adminStatus" class="status"></div>
 </section>
 
-<p class="muted">Editorial note: automatically collected headlines belong to their original publishers. Verify the original report, date and context before reposting. This site links to sources and does not present RSS headlines as independently verified facts.</p>
+<p class="muted">
+Editorial note: automatically collected headlines belong to their original publishers.
+Verify the original report, date and context before reposting. This site links to sources
+and does not present RSS headlines as independently verified facts.
+</p>
 </main>
 
-<footer><div class="wrap foot"><span>© <span id="year"></span> VIRAL INDIA 24</span><span>Verify before sharing • Correct information matters</span></div></footer>
+<footer>
+<div class="wrap foot">
+<span>© <span id="year"></span> VIRAL INDIA 24</span>
+<span>Verify before sharing • Correct information matters</span>
+</div>
+</footer>
 
 <script>
 const $=id=>document.getElementById(id);
@@ -146,63 +197,131 @@ let token=sessionStorage.getItem('vi24_token')||'';
 let news=[];
 let previewUrl='';
 
-const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+}[c]));
 
+/* NEWS CARD */
 function card(n){
 const photo=n.imageUrl
 ? `<img src="${esc(n.imageUrl)}" alt="${esc(n.title||'News photo')}" loading="lazy">`
 : esc(n.emoji||'📰');
 
+const articleUrl=n.isOwn
+? '/news/'+encodeURIComponent(n.id)
+: (n.url||'');
+
 return `<article class="card">
 <div class="thumb">${photo}</div>
 <div class="body">
 <div class="cat">${esc(n.category||'News')}</div>
-<h3>${n.url?`<a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>`:esc(n.title)}</h3>
+
+<h3>${
+n.isOwn
+? `<a href="${articleUrl}">${esc(n.title)}</a>`
+: n.url
+? `<a href="${esc(n.url)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>`
+: esc(n.title)
+}</h3>
+
 <p class="desc">${esc(n.summary||'')}</p>
-<div class="meta"><span>${esc(n.source||'Viral India 24')}</span><span>${esc(n.time||'')}</span></div>
-<div class="row" style="margin-top:12px">
-<button class="btn primary" onclick="shareStory('${encodeURIComponent(n.title||'')}','${encodeURIComponent(n.url||location.href)}')">↗ Share</button>
-${n.url?`<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(n.url)}">Read source ↗</a>`:''}
+
+<div class="meta">
+<span>${esc(n.source||'Viral India 24')}</span>
+<span>${esc(n.time||'')}</span>
 </div>
-</div></article>`;
+
+<div class="row" style="margin-top:12px">
+<button class="btn primary" onclick="shareStory('${encodeURIComponent(n.title||'')}','${encodeURIComponent(articleUrl||location.href)}')">↗ Share</button>
+
+${
+n.isOwn
+? `<a class="btn" href="${articleUrl}">Read full story ↗</a>`
+: n.url
+? `<a class="btn" target="_blank" rel="noopener noreferrer" href="${esc(n.url)}">Read source ↗</a>`
+: ''
+}
+</div>
+</div>
+</article>`;
 }
 
+/* LOAD NEWS */
 async function load(){
 $('refresh').textContent='Loading…';
+
 try{
 let r=await fetch('/api/news');
 let d=await r.json();
+
 news=d.items||[];
 $('ticker').textContent=news[0]?.title||'No current headlines returned by feeds.';
+
 }catch(e){
 news=[];
 $('ticker').textContent='Could not load live feed. Check server or internet connection.';
 }
+
 try{
 let r=await fetch('/api/posts');
 let d=await r.json();
-news=[...(d.items||[]),...news];
+
+/* Mark manually published stories */
+news=[...(d.items||[]).map(n=>({...n,isOwn:true})),...news];
+
 }catch(e){}
+
 render();
 $('refresh').textContent='↻ Refresh news';
 }
 
+/* DISPLAY NEWS */
 function render(){
 let q=$('search').value.toLowerCase();
 let c=$('category').value;
-let filtered=news.filter(n=>(c==='All'||n.category===c)&&(`${n.title} ${n.summary} ${n.source} ${n.category}`).toLowerCase().includes(q));
-$('trendingGrid').innerHTML=filtered.slice(0,3).map(card).join('')||'<p class="muted">No current stories found.</p>';
-$('latestGrid').innerHTML=filtered.map(card).join('')||'<p class="muted">No stories match your search.</p>';
+
+let filtered=news.filter(n=>
+(c==='All'||n.category===c)&&
+(`${n.title} ${n.summary} ${n.source} ${n.category}`).toLowerCase().includes(q)
+);
+
+$('trendingGrid').innerHTML=
+filtered.slice(0,3).map(card).join('')||
+'<p class="muted">No current stories found.</p>';
+
+$('latestGrid').innerHTML=
+filtered.map(card).join('')||
+'<p class="muted">No stories match your search.</p>';
+
 $('count').textContent=`${filtered.length} stories`;
+
 if(token)loadPosts();
 }
 
+/* SHARE */
 window.shareStory=async(t,u)=>{
-let title=decodeURIComponent(t),url=decodeURIComponent(u);
-if(navigator.share){try{await navigator.share({title,url})}catch(e){}}
-else{try{await navigator.clipboard.writeText(title+' '+url);alert('Headline/link copied')}catch(e){prompt('Copy this link:',url)}}
+let title=decodeURIComponent(t);
+let url=decodeURIComponent(u);
+
+if(navigator.share){
+try{
+await navigator.share({title,url});
+}catch(e){}
+}else{
+try{
+await navigator.clipboard.writeText(title+' '+url);
+alert('Headline/link copied');
+}catch(e){
+prompt('Copy this link:',url);
+}
+}
 };
 
+/* PHOTO PREVIEW */
 function clearPreview(){
 if(previewUrl)URL.revokeObjectURL(previewUrl);
 previewUrl='';
@@ -213,14 +332,20 @@ $('imageFile').value='';
 
 $('imageFile').onchange=()=>{
 const file=$('imageFile').files[0];
-if(!file){clearPreview();return;}
+
+if(!file){
+clearPreview();
+return;
+}
 
 const allowed=['image/jpeg','image/png','image/webp'];
+
 if(!allowed.includes(file.type)){
 alert('Only JPG, PNG and WebP images are allowed.');
 clearPreview();
 return;
 }
+
 if(file.size>5*1024*1024){
 alert('Image must be smaller than 5 MB.');
 clearPreview();
@@ -228,40 +353,59 @@ return;
 }
 
 if(previewUrl)URL.revokeObjectURL(previewUrl);
+
 previewUrl=URL.createObjectURL(file);
 $('imagePreview').src=previewUrl;
 $('imagePreview').classList.remove('hidden');
 $('adminStatus').textContent='Photo selected. Preview ready.';
 };
 
-$('date').textContent=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+/* DATE AND BUTTONS */
+$('date').textContent=new Date().toLocaleDateString('en-IN',{
+day:'2-digit',
+month:'short',
+year:'numeric'
+});
+
 $('year').textContent=new Date().getFullYear();
 $('refresh').onclick=load;
 $('search').oninput=render;
 $('category').onchange=render;
 
+/* ADMIN LOGIN */
 $('loginForm').onsubmit=async e=>{
 e.preventDefault();
 $('adminStatus').textContent='Logging in…';
+
 try{
 let r=await fetch('/api/admin/login',{
 method:'POST',
 headers:{'Content-Type':'application/json'},
 body:JSON.stringify({password:$('password').value})
 });
+
 let d=await r.json();
+
 if(!r.ok)throw Error(d.error||'Login failed');
+
 token=d.token;
 sessionStorage.setItem('vi24_token',token);
+
 $('login').classList.add('hidden');
 $('editor').classList.remove('hidden');
 $('adminStatus').textContent='Logged in.';
+
 loadPosts();
-}catch(err){$('adminStatus').textContent=err.message;}
+
+}catch(err){
+$('adminStatus').textContent=err.message;
+}
 };
 
+/* PUBLISH NEWS */
 $('postForm').onsubmit=async e=>{
 e.preventDefault();
+
 const btn=$('publishBtn');
 btn.disabled=true;
 
@@ -271,6 +415,7 @@ const file=$('imageFile').files[0];
 
 if(file){
 $('adminStatus').textContent='Uploading photo to Cloudinary…';
+
 const formData=new FormData();
 formData.append('image',file);
 
@@ -279,8 +424,11 @@ method:'POST',
 headers:{'Authorization':'Bearer '+token},
 body:formData
 });
+
 let uploaded=await upload.json();
+
 if(!upload.ok)throw Error(uploaded.error||'Photo upload failed.');
+
 imageUrl=uploaded.imageUrl;
 }
 
@@ -303,56 +451,82 @@ imageUrl:imageUrl
 });
 
 let d=await r.json();
+
 if(!r.ok)throw Error(d.error||'Publish failed.');
 
 $('postForm').reset();
 clearPreview();
+
 $('adminStatus').textContent='Story and photo published successfully.';
+
 await load();
 await loadPosts();
 
 }catch(err){
 $('adminStatus').textContent=err.message;
+
 }finally{
 btn.disabled=false;
 }
 };
 
+/* ADMIN POSTS LIST */
 async function loadPosts(){
 try{
 let r=await fetch('/api/posts');
 let d=await r.json();
+
 $('myPosts').innerHTML=(d.items||[]).map(n=>`
 <div class="card" style="margin:8px 0;padding:12px">
-${n.imageUrl?`<img src="${esc(n.imageUrl)}" alt="News photo" style="width:100px;height:65px;object-fit:cover;border-radius:5px">`:''}
+
+${n.imageUrl
+? `<img src="${esc(n.imageUrl)}" alt="News photo" style="width:100px;height:65px;object-fit:cover;border-radius:5px">`
+: ''
+}
+
 <b>${esc(n.title)}</b>
+
 <button class="btn" onclick="deletePost('${esc(n.id)}')">Delete</button>
-</div>`).join('')||'<p class="muted">No posts yet.</p>';
+
+</div>
+`).join('')||'<p class="muted">No posts yet.</p>';
+
 }catch(e){}
 }
 
+/* DELETE POST */
 window.deletePost=async id=>{
 if(!confirm('Delete this story?'))return;
+
 try{
 let r=await fetch('/api/posts/'+encodeURIComponent(id),{
 method:'DELETE',
 headers:{'Authorization':'Bearer '+token}
 });
+
 if(!r.ok)throw Error('Delete failed');
+
 $('adminStatus').textContent='Story deleted.';
+
 await load();
 await loadPosts();
-}catch(e){$('adminStatus').textContent=e.message;}
+
+}catch(e){
+$('adminStatus').textContent=e.message;
+}
 };
 
+/* LOGOUT */
 $('logout').onclick=()=>{
 token='';
 sessionStorage.removeItem('vi24_token');
+
 $('editor').classList.add('hidden');
 $('login').classList.remove('hidden');
 $('adminStatus').textContent='Logged out.';
 };
 
+/* START WEBSITE */
 load();
 </script>
 </body>
